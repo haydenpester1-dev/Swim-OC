@@ -1,0 +1,117 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #111; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; user-select: none; -webkit-user-select: none; }
+#game, #game canvas { position: fixed; inset: 0; display: block; }
+.hidden { display: none !important; }
+
+/* ---------- HUD ---------- */
+#hud { position: fixed; inset: 0; pointer-events: none; }
+#gps { position: absolute; top: 16px; left: 16px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; max-width: min(460px, calc(100vw - 32px));
+  background: rgba(12, 88, 52, 0.92); border: 2px solid rgba(255,255,255,0.85); border-radius: 10px; padding: 10px 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+#gpsIcon { width: 58px; height: 64px; display: flex; align-items: center; justify-content: center; flex: none; }
+#gpsIcon img { width: 58px; }
+#gpsIcon span { font-size: 22px; font-weight: 800; background: #fff; color: #0c5834; border-radius: 6px; padding: 6px 8px; }
+#gps .txt { min-width: 0; flex: 1; }
+#gpsDist { font-size: 26px; font-weight: 800; line-height: 1; }
+#gpsTitle { font-size: 20px; font-weight: 700; margin-top: 4px; }
+#gpsSub { font-size: 14px; opacity: 0.85; }
+#gpsLanes { flex-basis: 100%; display: flex; gap: 4px; align-items: center; }
+#gpsLanes i { width: 22px; height: 26px; border-radius: 3px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); position: relative; }
+#gpsLanes i::after { content: "↑"; position: absolute; inset: 0; text-align: center; line-height: 26px; font-style: normal; font-size: 15px; color: rgba(255,255,255,0.5); }
+#gpsLanes i.on { background: #ffffff; }
+#gpsLanes i.on::after { color: #0c5834; font-weight: 900; }
+#gpsLanes i.aux { border-style: dashed; }
+#gpsLanes i.aux.on { background: #f4c20d; }
+#gpsLanes b { margin-left: 8px; font-size: 14px; letter-spacing: 0.5px; }
+
+#mission { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); text-align: center; background: rgba(10,14,20,0.72); border-radius: 10px; padding: 8px 18px; min-width: 170px; }
+#mission .label { font-size: 11px; letter-spacing: 2px; opacity: 0.7; }
+#dest { font-size: 15px; font-weight: 700; }
+#timer { font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }
+#timer.low { color: #ff5a4f; animation: pulse 0.6s infinite alternate; }
+@keyframes pulse { to { transform: scale(1.08); } }
+
+#minimap { position: absolute; top: 16px; right: 16px; width: 210px; height: 210px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.85); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+#speedBox { position: absolute; right: 20px; bottom: 20px; display: flex; align-items: flex-end; gap: 14px; background: rgba(10,14,20,0.72); border-radius: 12px; padding: 12px 16px; }
+#speedBox .limit { width: 58px; background: #fff; color: #111; border: 3px solid #111; outline: 2px solid #fff; border-radius: 6px; text-align: center; padding: 4px 0; line-height: 1; }
+#speedBox .limit small { font-size: 9px; font-weight: 800; }
+#speedBox .limit b { font-size: 28px; display: block; }
+#speedBox .spd { text-align: right; }
+#speedBox .spd b { font-size: 60px; line-height: 0.9; font-variant-numeric: tabular-nums; display: block; min-width: 110px; }
+#speedBox .spd small { font-size: 12px; letter-spacing: 2px; opacity: 0.8; }
+#speedBox.over .spd b { color: #ff7a59; }
+.bars { display: flex; flex-direction: column; gap: 6px; }
+.bar { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 1px; }
+.bar div { width: 90px; height: 9px; background: rgba(255,255,255,0.15); border-radius: 5px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #33c3ff, #8a5cff); }
+.bar.dmg i { background: linear-gradient(90deg, #ffb84d, #ff4d4d); }
+#scoreBox { position: absolute; right: 20px; bottom: 132px; background: rgba(10,14,20,0.6); padding: 6px 12px; border-radius: 8px; font-size: 18px; }
+#scoreBox .label { font-size: 11px; letter-spacing: 2px; opacity: 0.7; }
+#road { position: absolute; left: 20px; bottom: 20px; background: rgba(10,14,20,0.72); padding: 8px 14px; border-radius: 8px; font-size: 15px; font-weight: 600; max-width: calc(100vw - 380px); }
+#keys { position: absolute; left: 20px; bottom: 62px; font-size: 12px; opacity: 0.6; text-shadow: 0 1px 2px #000; }
+#toast { position: absolute; left: 50%; top: 120px; transform: translateX(-50%); background: rgba(10,14,20,0.8); padding: 8px 16px; border-radius: 8px; font-weight: 700; opacity: 0; transition: opacity 0.25s; }
+#toast.show { opacity: 1; }
+#popup { position: absolute; left: 50%; top: 42%; transform: translateX(-50%); font-size: 30px; font-weight: 900; color: #ffd23f; text-shadow: 0 3px 0 #000, 0 0 20px rgba(0,0,0,0.6); opacity: 0; white-space: nowrap; }
+#popup.show { animation: pop 1.2s ease-out forwards; }
+@keyframes pop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.1); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -30px) scale(1); } }
+#flash { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); text-align: center; opacity: 0; transition: opacity 0.3s; }
+#flash.show { opacity: 1; }
+#flashA { font-size: 38px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 4px 0 rgba(0,0,0,0.6); }
+#flashB { font-size: 18px; text-shadow: 0 2px 4px #000; }
+
+/* ---------- Touch ---------- */
+#touch { position: fixed; inset: auto 0 0 0; display: flex; justify-content: space-between; padding: 16px; pointer-events: none; z-index: 5; }
+#touch div { display: flex; gap: 10px; pointer-events: auto; }
+#touch button { width: 72px; height: 72px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); background: rgba(0,0,0,0.35); color: #fff; font-weight: 800; font-size: 14px; touch-action: none; }
+#touch button.on { background: rgba(255,255,255,0.35); }
+
+/* ---------- Overlays ---------- */
+.overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(5,10,18,0.45); z-index: 10; padding: 16px; overflow-y: auto; }
+.panel { background: rgba(14,20,30,0.92); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 28px 32px; max-width: 460px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); margin: auto; }
+.panel.wide { max-width: 980px; }
+h1 { margin: 0 0 6px; font-size: 40px; letter-spacing: 3px; font-weight: 900; background: linear-gradient(90deg, #ff8a3d, #ffd23f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+h2 { font-size: 13px; letter-spacing: 3px; opacity: 0.7; margin: 20px 0 10px; font-weight: 700; }
+.tag { opacity: 0.85; margin: 0 0 8px; }
+#missions { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.card { text-align: left; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px; color: #fff; cursor: pointer; display: flex; flex-direction: column; gap: 4px; font: inherit; }
+.card:hover { background: rgba(255,138,61,0.18); border-color: #ff8a3d; }
+.card b { font-size: 16px; }
+.card span { font-size: 13px; opacity: 0.8; }
+.card em { font-size: 12px; font-style: normal; color: #ffd23f; }
+.row { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+.row.col { flex-direction: column; }
+button.big { flex: 1; padding: 14px 18px; font-size: 17px; font-weight: 800; border-radius: 10px; border: 0; cursor: pointer; background: linear-gradient(90deg, #ff8a3d, #ffb13d); color: #1a1a1a; }
+button.big.alt { background: rgba(255,255,255,0.12); color: #fff; }
+button.big:hover { filter: brightness(1.1); }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+.opts label { display: block; font-size: 11px; letter-spacing: 2px; opacity: 0.7; margin-bottom: 6px; text-transform: uppercase; }
+.seg { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
+.seg button { flex: 1; padding: 8px 6px; background: transparent; border: 0; color: #fff; cursor: pointer; font: inherit; font-size: 13px; }
+.seg button.sel { background: #ff8a3d; color: #111; font-weight: 700; }
+button.small { padding: 8px 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; cursor: pointer; font: inherit; font-size: 13px; width: 100%; }
+.help { margin-top: 18px; font-size: 13px; line-height: 1.55; opacity: 0.8; }
+.help i { color: #f4c20d; font-style: normal; font-weight: 700; }
+#freeList { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; }
+#freeList button { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px; color: #fff; cursor: pointer; text-align: left; font: inherit; }
+#freeList button:hover { border-color: #ff8a3d; }
+#freeList img { width: 40px; }
+#freeList span { display: flex; flex-direction: column; font-size: 12px; opacity: 0.9; }
+#freeList b { font-size: 15px; }
+#resRows div { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); gap: 12px; }
+#resRows span { opacity: 0.75; }
+#fullmapWrap { position: fixed; inset: 0; z-index: 8; background: #1b222b; }
+#fullmap { width: 100%; height: 100%; display: block; }
+#loading h1 { text-align: center; }
+#loading p { text-align: center; opacity: 0.8; }
+
+@media (max-width: 760px) {
+  #gps { max-width: calc(100vw - 32px); top: 10px; left: 10px; padding: 8px 10px; }
+  #gpsDist { font-size: 20px; } #gpsTitle { font-size: 16px; }
+  #mission { top: auto; bottom: 110px; left: 16px; transform: none; }
+  #minimap { width: 120px; height: 120px; top: auto; bottom: 200px; right: 10px; }
+  #speedBox { bottom: 100px; right: 10px; padding: 8px 10px; }
+  #speedBox .spd b { font-size: 40px; min-width: 70px; }
+  #scoreBox { display: none; }
+  #road, #keys { display: none; }
+  h1 { font-size: 28px; }
+  .panel { padding: 20px 16px; }
+}

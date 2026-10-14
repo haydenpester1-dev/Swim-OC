@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>OC Freeway Rush</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="game"></div>
+
+<div id="loading" class="overlay"><div class="panel"><h1>OC FREEWAY RUSH</h1><p>Paving the 405…</p></div></div>
+
+<div id="hud" class="hidden">
+  <div id="gps">
+    <div id="gpsIcon"></div>
+    <div class="txt">
+      <div id="gpsDist"></div>
+      <div id="gpsTitle"></div>
+      <div id="gpsSub"></div>
+    </div>
+    <div id="gpsLanes" class="hidden"></div>
+  </div>
+  <div id="mission">
+    <div class="label">ARRIVE AT</div>
+    <div id="dest"></div>
+    <div id="timer">0:00</div>
+  </div>
+  <canvas id="minimap" width="210" height="210"></canvas>
+  <div id="speedBox">
+    <div class="limit"><small>SPEED<br>LIMIT</small><b id="limit">65</b></div>
+    <div class="spd"><b id="speed">0</b><small>MPH</small></div>
+    <div class="bars">
+      <div class="bar"><span>NOS</span><div><i id="nosFill"></i></div></div>
+      <div class="bar dmg"><span>DMG</span><div><i id="dmgFill"></i></div></div>
+    </div>
+  </div>
+  <div id="scoreBox"><span class="label">SCORE</span> <b id="score">0</b></div>
+  <div id="road"></div>
+  <div id="toast"></div>
+  <div id="popup"></div>
+  <div id="flash"><div id="flashA"></div><div id="flashB"></div></div>
+  <div id="keys">W/↑ gas · S/↓ brake · A D steer · Shift NOS · C camera · M map · Esc pause</div>
+</div>
+
+<div id="touch" class="hidden">
+  <div class="left"><button data-k="l">◀</button><button data-k="r">▶</button></div>
+  <div class="right"><button data-k="n">NOS</button><button data-k="b">BRAKE</button><button data-k="g">GAS</button></div>
+</div>
+
+<div id="menu" class="overlay hidden">
+  <div class="panel wide">
+    <h1>OC FREEWAY RUSH</h1>
+    <p class="tag">Beat the clock across Orange County. Weave through traffic, hit your interchange, take the right exit.</p>
+    <h2>Commutes</h2>
+    <div id="missions"></div>
+    <div class="row">
+      <button id="btnRandom" class="big">Random Commute</button>
+      <button id="btnFree" class="big alt">Free Drive</button>
+    </div>
+    <div class="opts">
+      <div><label>Time of day</label><div id="optTod" class="seg"></div></div>
+      <div><label>Traffic</label><div id="optTraffic" class="seg"></div></div>
+      <div><label>Graphics</label><div id="optGfx" class="seg"></div></div>
+      <div><label>&nbsp;</label><button id="btnSound" class="small">Sound: on</button></div>
+    </div>
+    <div class="help">
+      <b>How interchanges work:</b> overhead signs and the GPS tell you which lane to use. A yellow <i>EXIT ONLY</i> lane opens on the right, or a lane on the left for left-side connectors. Be in that lane when it splits off. Where a freeway ends, your lane decides which way you go. Miss it and the GPS reroutes you.
+      <br><b>Controls:</b> W/↑ gas · S/↓/Space brake · A/D or ←/→ steer · Shift NOS (refilled by near misses) · C camera · M map · H horn · N sound · R recenter · Esc pause
+    </div>
+  </div>
+</div>
+
+<div id="freePick" class="overlay hidden">
+  <div class="panel wide">
+    <h1>FREE DRIVE</h1>
+    <p class="tag">Pick a freeway to start on. No clock, just traffic.</p>
+    <div id="freeList"></div>
+    <div class="row"><button id="btnFreeBack" class="big alt">Back</button></div>
+  </div>
+</div>
+
+<div id="pause" class="overlay hidden">
+  <div class="panel">
+    <h1>PAUSED</h1>
+    <div class="row col"><button id="btnResume" class="big">Resume</button><button id="btnQuit" class="big alt">Main menu</button></div>
+  </div>
+</div>
+
+<div id="results" class="overlay hidden">
+  <div class="panel">
+    <h1 id="resTitle"></h1>
+    <p id="resSub" class="tag"></p>
+    <div id="resRows"></div>
+    <div class="row"><button id="btnRetry" class="big">Retry</button><button id="btnMenu" class="big alt">Menu</button></div>
+  </div>
+</div>
+
+<div id="fullmapWrap" class="hidden"><canvas id="fullmap"></canvas></div>
+
+<script src="lib/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/network.js"></script>
+<script src="js/world.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
